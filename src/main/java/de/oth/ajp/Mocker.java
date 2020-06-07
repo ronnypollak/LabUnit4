@@ -15,7 +15,7 @@ import static de.oth.ajp.ExtraInfo.*;
 
 public class Mocker {
 
-    //TODO: Arraylist hinzufügen welche für jedes Objekt methodsString speichert. so hat jedes objekt sein eigenes array an bereits benutzten methoden
+    //TODO: Arraylist hinzufügen welche für jedes Objekt methodsString speichert. so hat jedes objekt sein eigenes array an bereits benutzten methoden UND schleifen Längen anpassen
 
     static ArrayList<Method> methodsUsed = new ArrayList<Method>();
     static String[][] methodsString = new String[10][3];
@@ -41,9 +41,12 @@ public class Mocker {
             public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                 methodsString[i][0] = method.getName();
                 int o = 1;
-                for (Parameter p : method.getParameters()
+                /*for (Parameter p : method.getParameters()
                      ) {
                     methodsString[i][o++] = p.getName();
+                }*/
+                for(Object para : args){
+                    methodsString[i][o++] = para.toString();
                 }
 
                 //methodsString[i][1] = String.valueOf(method.getParameters());
@@ -71,22 +74,26 @@ public class Mocker {
             public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                 boolean isRight = false;
 
-                for (int u = 0; u <= methodsString[0].length; u++){
+                for (int u = 0; u <= methodsString[0].length+1; u++){
                     if(methodsString[u][0].equals(method.getName()) ){
-                        for (Parameter p : method.getParameters()) {
+                        if (args.length == 0){
+                            actualTimes[0]++;
+                        }
+                        for (Object para : args) {
                             for (String s: methodsString[u]) {
-                                if(p.getName().equals(s)){
+                                if(para.toString().equals(s)){
                                     isRight = true;
                                     break;
                                 }
                             }
                         }
-                        if(isRight){
-                            System.out.println(method.getName() + "() was used as wished");
-                            return getReturnType(method);
-                        }
+
                     }
-                }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+                }if(isRight){
+                    System.out.println(method.getName() + "() was used as wished");
+                    return getReturnType(method);
+                }
+                throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
 
             }
         });
@@ -103,23 +110,25 @@ public class Mocker {
                     public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                         boolean isRight = false;
 
-                        for (int u = 0; u <= methodsString[0].length; u++){
+                        for (int u = 0; u <= methodsString[0].length+1; u++){
                             if(methodsString[u][0].equals(method.getName()) ){
-                                for (Parameter p : method.getParameters()) {
+                                if (args.length == 0){
+                                    actualTimes[0]++;
+                                }
+                                for (Object para : args) {
                                     for (String s: methodsString[u]) {
-                                        if(p.getName().equals(s)){
+                                        if(para.toString().equals(s)){
                                             actualTimes[0]++;
-                                            isRight = true;
                                             break;
                                         }
                                     }
                                 }
-                                if(isRight = false){
-                                    System.out.println(method.getName() + "() was used as wished");
-                                    return getReturnType(method);
-                                }
                             }
-                        }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+                        }if(actualTimes[0] == 0){
+                            System.out.println(method.getName() + "() was used as wished");
+                            return getReturnType(method);
+                        }
+                        throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
 
                     }
                 });
@@ -131,22 +140,26 @@ public class Mocker {
                     public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                         boolean isRight = false;
 
-                        for (int u = 0; u <= methodsString[0].length; u++){
+                        for (int u = 0; u <= methodsString[0].length+1; u++){
                             if(methodsString[u][0].equals(method.getName()) ){
-                                for (Parameter p : method.getParameters()) {
+                                if (args.length == 0){
+                                    actualTimes[0]++;
+                                }
+                                for (Object para : args) {
                                     for (String s: methodsString[u]) {
-                                        if(p.getName().equals(s)){
+                                        if(para.toString().equals(s)){
                                             actualTimes[0]++;
                                             break;
                                         }
                                     }
                                 }
-                                if(actualTimes[0] == times){
-                                    System.out.println(method.getName() + "() was used as wished");
-                                    return getReturnType(method);
-                                }
+
                             }
-                        }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+                        }if(actualTimes[0] == times){
+                            System.out.println(method.getName() + "() was used as wished");
+                            return getReturnType(method);
+                        }
+                        throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
 
                     }
                 });
@@ -158,22 +171,26 @@ public class Mocker {
                     public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                         boolean isRight = false;
 
-                        for (int u = 0; u <= methodsString[0].length; u++){
+                        for (int u = 0; u <= methodsString[0].length+1; u++){
                             if(methodsString[u][0].equals(method.getName()) ){
-                                for (Parameter p : method.getParameters()) {
+                                if (args.length == 0){
+                                    actualTimes[0]++;
+                                }
+                                for (Object para : args) {
                                     for (String s: methodsString[u]) {
-                                        if(p.getName().equals(s)){
+                                        if(para.toString().equals(s)){
                                             actualTimes[0]++;
                                             break;
                                         }
                                     }
                                 }
-                                if(actualTimes[0] >= times){
-                                    System.out.println(method.getName() + "() was used as wished");
-                                    return getReturnType(method);
-                                }
+
                             }
-                        }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+                        }if(actualTimes[0] >= times){
+                            System.out.println(method.getName() + "() was used as wished");
+                            return getReturnType(method);
+                        }
+                        throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
 
                     }
                 });
@@ -185,22 +202,26 @@ public class Mocker {
                     public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                         boolean isRight = false;
 
-                        for (int u = 0; u <= methodsString[0].length; u++){
+                        for (int u = 0; u <= methodsString[0].length+1; u++){
                             if(methodsString[u][0].equals(method.getName()) ){
-                                for (Parameter p : method.getParameters()) {
+                                if (args.length == 0){
+                                    actualTimes[0]++;
+                                }
+                                for (Object para : args) {
                                     for (String s: methodsString[u]) {
-                                        if(p.getName().equals(s)){
+                                        if(para.toString().equals(s)){
                                             actualTimes[0]++;
                                             break;
                                         }
                                     }
                                 }
-                                if(actualTimes[0] <= times){
-                                    System.out.println(method.getName() + "() was used as wished");
-                                    return getReturnType(method);
-                                }
+
                             }
-                        }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+                        }if(actualTimes[0] <= times){
+                            System.out.println(method.getName() + "() was used as wished");
+                            return getReturnType(method);
+                        }
+                        throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
 
                     }
                 });

@@ -33,10 +33,11 @@ public class TestWithOthMocker {
         mockObject.size(); // would return 0 as mock’s default return value
         mockObject.clear();
         verify(mockObject, times(2)).add("John Doe");
-        verify(mockObject, times(500)).add("Max Muster"); // same as times(1)
+        verify(mockObject).add("Max Muster"); // same as times(1)
+        verify(mockObject, atLeast(2)).add("John Doe");
+        verify(mockObject, atMost(1)).add("John Doe");
 
-
-        // verify(mockObject, never()).clear();
+        verify(mockObject, never()).clear();
     }
 
 }
