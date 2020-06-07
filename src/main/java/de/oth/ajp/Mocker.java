@@ -10,14 +10,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import static de.oth.ajp.ExtraInfo.*;
 
 public class Mocker {
 
     //TODO: Arraylist hinzufügen welche für jedes Objekt methodsString speichert. so hat jedes objekt sein eigenes array an bereits benutzten methoden UND schleifen Längen anpassen
-
-    static ArrayList<Method> methodsUsed = new ArrayList<Method>();
+    static HashMap<Object, String[][]> objMethods = new HashMap<>();
     static String[][] methodsString = new String[10][3];
     static int i = 0;
 
@@ -41,20 +41,46 @@ public class Mocker {
             public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                 methodsString[i][0] = method.getName();
                 int o = 1;
-                /*for (Parameter p : method.getParameters()
-                     ) {
-                    methodsString[i][o++] = p.getName();
-                }*/
+
                 for(Object para : args){
                     methodsString[i][o++] = para.toString();
                 }
-
-                //methodsString[i][1] = String.valueOf(method.getParameters());
                 i++;
-                //methodsUsed.add(method);
-
                 System.out.println(method.getName() + "(" + Arrays.toString(args) + ")" );
                 return getReturnType(method);
+
+            }
+        };
+
+        Class c = factory.createClass(); //proxyClass
+        Proxy proxy = (Proxy)c.getDeclaredConstructor().newInstance();
+        proxy.setHandler(handler);
+        return (T) proxy;
+    }
+
+    public static <T> T spy(T mockClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        ProxyFactory factory = new ProxyFactory();
+        factory.setSuperclass(mockClass.getClass());
+
+        factory.setFilter(new MethodFilter() {
+            public boolean isHandled(Method method) {
+                return !method.getName().equals("finalize");
+            }
+        });
+
+        MethodHandler handler = new MethodHandler() {
+            public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
+                methodsString[i][0] = method.getName();
+                int o = 1;
+
+                for(Object para : args){
+                    methodsString[i][o++] = para.toString();
+                }
+                i++;
+                System.out.println(method.getName() + "(" + Arrays.toString(args) + ")" );
+
+                return proceed.invoke(self, args);
 
             }
         };
@@ -74,7 +100,7 @@ public class Mocker {
             public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                 boolean isRight = false;
 
-                for (int u = 0; u <= methodsString[0].length+1; u++){
+                for (int u = 0; u < i; u++){
                     if(methodsString[u][0].equals(method.getName()) ){
                         if (args.length == 0){
                             actualTimes[0]++;
@@ -101,6 +127,7 @@ public class Mocker {
     }
 
     public static <T> T verify(T mockObject, Verification v) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        int x = i;
         int times = v.times;
         final int[] actualTimes = {0};
         switch (v.info){
@@ -110,7 +137,7 @@ public class Mocker {
                     public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                         boolean isRight = false;
 
-                        for (int u = 0; u <= methodsString[0].length+1; u++){
+                        for (int u = 0; u < i; u++){
                             if(methodsString[u][0].equals(method.getName()) ){
                                 if (args.length == 0){
                                     actualTimes[0]++;
@@ -140,7 +167,7 @@ public class Mocker {
                     public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                         boolean isRight = false;
 
-                        for (int u = 0; u <= methodsString[0].length+1; u++){
+                        for (int u = 0; u < i; u++){
                             if(methodsString[u][0].equals(method.getName()) ){
                                 if (args.length == 0){
                                     actualTimes[0]++;
@@ -171,7 +198,7 @@ public class Mocker {
                     public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                         boolean isRight = false;
 
-                        for (int u = 0; u <= methodsString[0].length+1; u++){
+                        for (int u = 0; u < i; u++){
                             if(methodsString[u][0].equals(method.getName()) ){
                                 if (args.length == 0){
                                     actualTimes[0]++;
@@ -202,7 +229,7 @@ public class Mocker {
                     public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                         boolean isRight = false;
 
-                        for (int u = 0; u <= methodsString[0].length+1; u++){
+                        for (int u = 0; u < i; u++){
                             if(methodsString[u][0].equals(method.getName()) ){
                                 if (args.length == 0){
                                     actualTimes[0]++;

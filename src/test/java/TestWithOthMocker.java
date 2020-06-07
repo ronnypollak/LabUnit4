@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static de.oth.ajp.ExtraInfo.*;
 import static de.oth.ajp.Verification.*;
+///import static de.oth.ajp.Spy.*;
 
 public class TestWithOthMocker {
 
@@ -34,9 +35,6 @@ public class TestWithOthMocker {
         mockObject.clear();
         verify(mockObject, times(2)).add("John Doe");
         verify(mockObject).add("Max Muster"); // same as times(1)
-        verify(mockObject, atLeast(2)).add("John Doe");
-        verify(mockObject, atMost(1)).add("John Doe");
-
         verify(mockObject, never()).clear();
     }
 
