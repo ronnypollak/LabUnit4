@@ -11,6 +11,8 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static de.oth.ajp.ExtraInfo.*;
+
 public class Mocker {
 
     //TODO: Arraylist hinzufügen welche für jedes Objekt methodsString speichert. so hat jedes objekt sein eigenes array an bereits benutzten methoden
@@ -61,13 +63,15 @@ public class Mocker {
     }
 
     public static <T> T verify(T mockObject) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        int times = 1;
+        final int[] actualTimes = {0};
 
         Proxy proxy = (Proxy)mockObject;
         proxy.setHandler(new MethodHandler() {
             public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
                 boolean isRight = false;
 
-                for (int u = 0; u <= i; u++){
+                for (int u = 0; u <= methodsString[0].length; u++){
                     if(methodsString[u][0].equals(method.getName()) ){
                         for (Parameter p : method.getParameters()) {
                             for (String s: methodsString[u]) {
@@ -78,15 +82,134 @@ public class Mocker {
                             }
                         }
                         if(isRight){
-                            System.out.println(method.getName() + "() was used");
+                            System.out.println(method.getName() + "() was used as wished");
                             return getReturnType(method);
                         }
                     }
-                }throw new AssertionError("Verification failure: " + method.getName() + "() false use" );
+                }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
 
             }
         });
         return mockObject;
+    }
+
+    public static <T> T verify(T mockObject, Verification v) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        int times = v.times;
+        final int[] actualTimes = {0};
+        switch (v.info){
+            case NEVER -> {
+                Proxy proxy = (Proxy)mockObject;
+                proxy.setHandler(new MethodHandler() {
+                    public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
+                        boolean isRight = false;
+
+                        for (int u = 0; u <= methodsString[0].length; u++){
+                            if(methodsString[u][0].equals(method.getName()) ){
+                                for (Parameter p : method.getParameters()) {
+                                    for (String s: methodsString[u]) {
+                                        if(p.getName().equals(s)){
+                                            actualTimes[0]++;
+                                            isRight = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(isRight = false){
+                                    System.out.println(method.getName() + "() was used as wished");
+                                    return getReturnType(method);
+                                }
+                            }
+                        }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+
+                    }
+                });
+                return mockObject;
+            }
+            case EXACTLY -> {
+                Proxy proxy = (Proxy)mockObject;
+                proxy.setHandler(new MethodHandler() {
+                    public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
+                        boolean isRight = false;
+
+                        for (int u = 0; u <= methodsString[0].length; u++){
+                            if(methodsString[u][0].equals(method.getName()) ){
+                                for (Parameter p : method.getParameters()) {
+                                    for (String s: methodsString[u]) {
+                                        if(p.getName().equals(s)){
+                                            actualTimes[0]++;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(actualTimes[0] == times){
+                                    System.out.println(method.getName() + "() was used as wished");
+                                    return getReturnType(method);
+                                }
+                            }
+                        }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+
+                    }
+                });
+                return mockObject;
+            }
+            case ATLEAST -> {
+                Proxy proxy = (Proxy)mockObject;
+                proxy.setHandler(new MethodHandler() {
+                    public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
+                        boolean isRight = false;
+
+                        for (int u = 0; u <= methodsString[0].length; u++){
+                            if(methodsString[u][0].equals(method.getName()) ){
+                                for (Parameter p : method.getParameters()) {
+                                    for (String s: methodsString[u]) {
+                                        if(p.getName().equals(s)){
+                                            actualTimes[0]++;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(actualTimes[0] >= times){
+                                    System.out.println(method.getName() + "() was used as wished");
+                                    return getReturnType(method);
+                                }
+                            }
+                        }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+
+                    }
+                });
+                return mockObject;
+            }
+            case ATMOST -> {
+                Proxy proxy = (Proxy)mockObject;
+                proxy.setHandler(new MethodHandler() {
+                    public Object invoke(Object self, Method method, Method proceed, Object[] args) throws Throwable {
+                        boolean isRight = false;
+
+                        for (int u = 0; u <= methodsString[0].length; u++){
+                            if(methodsString[u][0].equals(method.getName()) ){
+                                for (Parameter p : method.getParameters()) {
+                                    for (String s: methodsString[u]) {
+                                        if(p.getName().equals(s)){
+                                            actualTimes[0]++;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(actualTimes[0] <= times){
+                                    System.out.println(method.getName() + "() was used as wished");
+                                    return getReturnType(method);
+                                }
+                            }
+                        }throw new AssertionError("Verification failure: " + method.getName() + "() Expected number of calls: " + times + " but was: " + actualTimes[0]);
+
+                    }
+                });
+                return mockObject;
+            }
+            default -> {
+                return null;
+            }
+        }
     }
 
     private static Object getReturnType(Method method) {
