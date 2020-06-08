@@ -27,15 +27,16 @@ public class TestWithOthMocker {
         verify(list, times(1)).add("Test");
         verify(list, exactly(1)).add("Test");  */
 
-        List<String> mockObject = mock(ArrayList.class);
-        mockObject.add("John Doe");
-        mockObject.add("Max Muster");
-        mockObject.add("John Doe");
-        mockObject.size(); // would return 0 as mock’s default return value
-        mockObject.clear();
-        verify(mockObject, times(2)).add("John Doe");
-        verify(mockObject).add("Max Muster"); // same as times(1)
-        verify(mockObject, never()).clear();
+        List<String> names = new ArrayList<>();
+        List<String> spyList = spy(names);
+        spyList.add("John Doe"); // really adds to ArrayList names
+        spyList.add("Max Muster");
+        spyList.add("John Doe");
+        spyList.size(); // would return 3
+        verify(spyList, atMost(2)).add("John Doe");
+        verify(spyList, atLeast(1)).add("Max Muster");
+        verify(spyList, never()).clear();
+        verify(spyList, times(1)).add("Max");
     }
 
 }

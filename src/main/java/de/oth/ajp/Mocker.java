@@ -16,7 +16,6 @@ import static de.oth.ajp.ExtraInfo.*;
 
 public class Mocker {
 
-    //TODO: Arraylist hinzufügen welche für jedes Objekt methodsString speichert. so hat jedes objekt sein eigenes array an bereits benutzten methoden UND schleifen Längen anpassen
     static HashMap<Object, String[][]> objMethods = new HashMap<>();
     static String[][] methodsString = new String[10][3];
     static int i = 0;
